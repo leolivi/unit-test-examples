@@ -81,11 +81,31 @@ class Stack {
 
       expect(a*a + b*b).toBe(c*c);
     }); 
-    
+
     test('simple test build a string', () => {
       const hello = 'Hello';
       const world = 'World';
-
+      
       expect (hello + ' ' + world).toBe('Hello World');
     });
+
+    test('simple test expecting to fail', () => {
+      const a = 'Hello';
+      const b = 4;
+      const c = 5;
+  
+      try {
+        expect(a*a + b*b).toBe(c*c);
+      } catch (error) {
+        console.log('Test has failed')
+        throw error;
+      } 
+     }); 
+
+     test('check if console.log was called if test failed', () => {
+        const logSpy = jest.spyOn(console, 'log');
+        console.log('Test has failed');
+        expect(logSpy).toHaveBeenCalledWith('Test has failed');
+     });
+
   });

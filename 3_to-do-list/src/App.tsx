@@ -1,57 +1,66 @@
-import { useState, FormEvent } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { NewTodoForm } from "./form/NewTodoForm";
 import "./styles.css";
+import Starwars from "./starwars/starwars";
+import { TodoList } from "./todo/TodoList";
 
-interface Todo {
+export interface Todo {
   id: string;
   title: string;
   completed: boolean;
 }
 
-function App() {
-  const [newItem, setNewItem] = useState<string>("");
-  const [todos, setTodos] = useState<Todo[]>([]);
+export default function App() {
+  const [todos, setTodos] = useState<Todo[]>(() => {
+    const localValue = localStorage.getItem("ITEMS");
+    if (localValue == null) return [];
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+    return JSON.parse(localValue);
+  });
 
+  useEffect(() => {
+    localStorage.setItem("ITEMS", JSON.stringify(todos));
+  }, [todos]);
+
+  function addTodo(title: string) {
     setTodos((currentTodos) => {
       return [
         ...currentTodos,
-        { id: crypto.randomUUID(), title: newItem, completed: false },
+        { id: crypto.randomUUID(), title, completed: false },
       ];
     });
   }
 
+  function toggleTodo(id: string, completed: boolean) {
+    setTimeout(() => {
+      setTodos((currentTodos) => {
+        return currentTodos.map((todo) => {
+          if (todo.id === id) {
+            todo.completed = completed;
+          }
+          return todo;
+        });
+      });
+    }, 1000);
+  }
+
+  function deleteTodo(id: string) {
+    setTodos((currentTodos) => {
+      return currentTodos.filter((todo) => todo.id !== id);
+    });
+  }
+
+  const countOpenTodos = useMemo(() => {
+    return todos.filter((todo) => !todo.completed).length;
+  }, [todos]);
+
   return (
     <>
-      <form onSubmit={handleSubmit} className="new-item-form">
-        <div className="form-row">
-          <label htmlFor="item">New Item</label>
-          <input
-            value={newItem}
-            onChange={(e) => setNewItem(e.target.value)}
-            type="text"
-            id="item"
-          />
-        </div>
-        <button className="btn">Add</button>
-      </form>
+      <NewTodoForm onSubmit={addTodo} />
       <h1 className="header">To-Do List</h1>
-      <ul className="list">
-        {todos.map((todo) => {
-          return (
-            <li>
-              <label>
-                <input type="checkbox" checked={todo.completed} />
-                {todo.title}
-              </label>
-              <button className="btn btn-danger">delete</button>
-            </li>
-          );
-        })}
-      </ul>
+      <div className="todo-counter">Offene To-dos: {countOpenTodos}</div>
+      <TodoList todos={todos} toggleTodo={toggleTodo} deleteTodo={deleteTodo} />
+      <Starwars />
     </>
   );
 }
-
-export default App;

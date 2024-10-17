@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { NewTodoForm } from "./form/NewTodoForm";
-import "./styles.css";
-import Starwars from "../../3_todo-list/src/starwars/starwars";
 import { TodoList } from "./todo/TodoList";
+import Starwars from "./starwars/starwars";
+import "./index.css";
 
 export interface Todo {
   id: string;

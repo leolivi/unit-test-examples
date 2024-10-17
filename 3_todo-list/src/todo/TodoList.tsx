@@ -1,5 +1,5 @@
 import { TodoItem } from "./TodoItem";
-import { Todo } from "./App";
+import { Todo } from "../../../3_to-do-list/src/App";
 
 interface TodoListProps {
   todos: Todo[];
